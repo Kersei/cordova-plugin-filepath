@@ -47,7 +47,14 @@ public class FilePath extends CordovaPlugin {
 
     public static final int READ_REQ_CODE = 0;
 
-    public static final String READ = Manifest.permission.READ_EXTERNAL_STORAGE;
+    protected static String READ;
+    static {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            READ = Manifest.permission.READ_MEDIA_IMAGES;
+        } else {
+            READ = Manifest.permission.READ_EXTERNAL_STORAGE;
+        }
+    }
 
     protected void getReadPermission(int requestCode) {
         PermissionHelper.requestPermission(this, requestCode, READ);
@@ -132,8 +139,8 @@ public class FilePath extends CordovaPlugin {
 
 
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
-        for (int i = 0; i < grantResults.length; i++) {
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED && (!permissions[i].equals(READ) && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
+        for (int r : grantResults) {
+            if (r == PackageManager.PERMISSION_DENIED) {
                 JSONObject resultObj = new JSONObject();
                 resultObj.put("code", 3);
                 resultObj.put("message", "Filesystem permission was denied.");
