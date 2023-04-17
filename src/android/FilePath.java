@@ -132,8 +132,8 @@ public class FilePath extends CordovaPlugin {
 
 
     public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
-        for (int r : grantResults) {
-            if (r == PackageManager.PERMISSION_DENIED) {
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] == PackageManager.PERMISSION_DENIED && (!permissions[i].equals(READ) && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
                 JSONObject resultObj = new JSONObject();
                 resultObj.put("code", 3);
                 resultObj.put("message", "Filesystem permission was denied.");
